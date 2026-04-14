@@ -1,43 +1,15 @@
-<?php
-
-namespace App\Http\Controllers;
-
-use Illuminate\Http\Request;
-use App\Models\Attendance;
-
-class AttendanceController extends Controller
+public function masuk(Request $request)
 {
-    // Tampilkan halaman + data
-    public function index()
-    {
-        $data = Attendance::all();
-        $total = Attendance::count();
+    // VALIDASI
+    $request->validate([
+        'nama' => 'required'
+    ]);
 
-        return view('attendance', compact('data', 'total'));
-    }
+    Attendance::create([
+        'nama' => $request->nama,
+        'tanggal' => date('Y-m-d'),
+        'jam_masuk' => date('H:i:s'),
+    ]);
 
-    // Absen masuk
-    public function masuk(Request $request)
-    {
-        Attendance::create([
-            'nama' => $request->nama,
-            'tanggal' => date('Y-m-d'),
-            'jam_masuk' => date('H:i:s'),
-        ]);
-
-        return redirect('/attendance');
-    }
-
-    // Absen pulang
-    public function pulang($id)
-    {
-        $data = Attendance::find($id);
-
-        if ($data) {
-            $data->jam_pulang = date('H:i:s');
-            $data->save();
-        }
-
-        return redirect('/attendance');
-    }
+    return redirect('/attendance');
 }
