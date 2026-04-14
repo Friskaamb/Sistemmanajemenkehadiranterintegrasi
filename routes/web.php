@@ -7,37 +7,30 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AttendanceController;
 
-
 /*
 |--------------------------------------------------------------------------
 | HALAMAN UTAMA
 |--------------------------------------------------------------------------
 */
 
-// Home
 Route::get('/', [HomeController::class, 'index']);
-
-// Contact
 Route::get('/contact', [HomeController::class, 'contact']);
 
-// Welcome bawaan Laravel
 Route::get('/welcome', function () {
     return view('welcome');
 });
 
-// Contoh parameter
 Route::get('/user/{id}', function ($id) {
     return 'User dengan ID ' . $id;
 });
-// Admin group
 
 /*
 |--------------------------------------------------------------------------
-| ADMIN (GROUP ROUTE)
+| ADMIN
 |--------------------------------------------------------------------------
 */
-Route::prefix('admin')->group(function () {
 
+Route::prefix('admin')->group(function () {
     Route::get('/dashboard', function () {
         return 'Admin Dashboard';
     });
@@ -45,57 +38,35 @@ Route::prefix('admin')->group(function () {
     Route::get('/users', function () {
         return 'Admin Users';
     });
-
 });
 
-
 /*
 |--------------------------------------------------------------------------
-| Praktikum List Barang
+| LIST BARANG
 |--------------------------------------------------------------------------
 */
 
-// Versi fleksibel (dari GitHub)
 Route::get('/listbarang/{id}/{nama}', [ListBarangController::class, 'tampilkan']);
+Route::get('/barang', [ListBarangController::class, 'tampilkan']);
+
 /*
 |--------------------------------------------------------------------------
-| PRAKTIKUM 4 - LIST BARANG
+| PRAKTIKUM VIEW (WAJIB)
 |--------------------------------------------------------------------------
 */
 
-Route::get('/barang', [ListBarangController::class, 'tampilkan']);
-
-// Versi sederhana (punya kamu)
-Route::get('/barang', [ListBarangController::class, 'tampilkan']);
-
-// View statis
 Route::view('/home', 'home');
 Route::view('/about', 'about');
 Route::view('/product', 'product');
+Route::view('/contact', 'contact');
 Route::view('/register', 'register');
 
 /*
 |--------------------------------------------------------------------------
-| PBL - Sistem Manajemen Kehadiran
-|--------------------------------------------------------------------------
-*/
-/*
-| HALAMAN WAJIB PRAKTIKUM (VIEW SAJA)
+| SISTEM KEHADIRAN
 |--------------------------------------------------------------------------
 */
 
-// Ini WAJIB dari modul
-Route::view('/home', 'home');
-Route::view('/about', 'about');
-Route::view('/product', 'product');
-Route::view('/register', 'register');
-
-
-/*
-|--------------------------------------------------------------------------
-| PBL - SISTEM KEHADIRAN
-|--------------------------------------------------------------------------
-*/
 // Login
 Route::get('/login', [LoginController::class, 'index']);
 
@@ -106,14 +77,3 @@ Route::get('/dashboard', [DashboardController::class, 'index']);
 Route::get('/attendance', [AttendanceController::class, 'index']);
 Route::post('/attendance/masuk', [AttendanceController::class, 'masuk']);
 Route::get('/attendance/pulang/{id}', [AttendanceController::class, 'pulang']);
-// HALAMAN WAJIB PRAKTIKUM
-
-Route::view('/home', 'home');
-Route::view('/about', 'about');
-Route::view('/product', 'product');
-Route::view('/contact', 'contact');
-Route::view('/register', 'register');
-
-// Yang pakai controller
-Route::get('/login', [LoginController::class, 'index']);
-Route::get('/dashboard', [DashboardController::class, 'index']);
