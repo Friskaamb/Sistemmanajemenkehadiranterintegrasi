@@ -16,6 +16,12 @@ use App\Http\Controllers\AttendanceController;
 Route::get('/', [HomeController::class, 'index']);
 Route::get('/contact', [HomeController::class, 'contact']);
 
+/*
+|--------------------------------------------------------------------------
+| CONTOH / TEST
+|--------------------------------------------------------------------------
+*/
+
 Route::get('/welcome', function () {
     return view('welcome');
 });
