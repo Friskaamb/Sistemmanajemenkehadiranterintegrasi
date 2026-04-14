@@ -1,48 +1,50 @@
-@extends('layouts.app')
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Attendance</title>
+</head>
+<body>
 
-@section('content')
+<h1>Absensi Karyawan</h1>
 
-<div class="card">
-    <h2>Form Absen</h2>
+<!-- FORM ABSEN MASUK -->
+<form action="/attendance/masuk" method="POST">
+    @csrf
+    <input type="text" name="nama" placeholder="Masukkan Nama">
+    <button type="submit">Absen Masuk</button>
+</form>
 
-    <form method="POST" action="/attendance/masuk">
-        @csrf
-        <input type="text" name="nama" placeholder="Masukkan Nama">
-        <button type="submit">Absen Masuk</button>
-    </form>
-</div>
+<br>
 
-<div class="card">
-    <h2>Data Absensi</h2>
+<!-- TABEL DATA -->
+<table border="1" cellpadding="10">
+    <tr>
+        <th>Nama</th>
+        <th>Tanggal</th>
+        <th>Masuk</th>
+        <th>Pulang</th>
+        <th>Aksi</th>
+    </tr>
 
-    <table>
-        <tr>
-            <th>Nama</th>
-            <th>Tanggal</th>
-            <th>Masuk</th>
-            <th>Pulang</th>
-            <th>Aksi</th>
-        </tr>
+    @foreach($data as $d)
+    <tr>
+        <td>{{ $d->nama }}</td>
+        <td>{{ $d->tanggal }}</td>
+        <td>{{ $d->jam_masuk }}</td>
+        <td>{{ $d->jam_pulang ?? '-' }}</td>
+        <td>
+            @if(!$d->jam_pulang)
+                <a href="/attendance/pulang/{{ $d->id }}">
+                    <button>Pulang</button>
+                </a>
+            @else
+                Sudah Pulang
+            @endif
+        </td>
+    </tr>
+    @endforeach
 
-        @foreach($data as $d)
-        <tr>
-            <td>{{ $d->nama }}</td>
-            <td>{{ $d->tanggal }}</td>
-            <td>{{ $d->jam_masuk }}</td>
-            <td>{{ $d->jam_pulang ?? '-' }}</td>
-            <td>
-                @if(!$d->jam_pulang)
-                    <a href="/attendance/pulang/{{ $d->id }}">
-                        <button>Pulang</button>
-                    </a>
-                @else
-                    Selesai
-                @endif
-            </td>
-        </tr>
-        @endforeach
-    </table>
+</table>
 
-</div>
-
-@endsection
+</body>
+</html>
