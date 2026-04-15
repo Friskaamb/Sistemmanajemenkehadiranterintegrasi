@@ -77,7 +77,11 @@
     <a href="/about">About</a>
     <a href="/product">Product</a>
     <a href="/contact">Contact</a>
-    <a href="/dashboard">Dashboard</a>
+    <a href="/dashboard" style="color: white; margin-right:10px;"
+   onmouseover="this.style.opacity='0.7'"
+   onmouseout="this.style.opacity='1'">
+   Dashboard
+</a>
     <a href="/attendance">Absensi</a>
 </div>
 
