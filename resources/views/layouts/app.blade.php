@@ -73,16 +73,12 @@
 <body>
 
 <div class="navbar">
-    <a href="/home">Home</a>
-    <a href="/about">About</a>
-    <a href="/product">Product</a>
-    <a href="/contact">Contact</a>
-    <a href="/dashboard" style="color: white; margin-right:10px;"
-   onmouseover="this.style.opacity='0.7'"
-   onmouseout="this.style.opacity='1'">
-   Dashboard
-</a>
-    <a href="/attendance">Absensi</a>
+    <a href="/home" class="hover:underline">Home</a>
+<a href="/about" class="hover:underline">About</a>
+<a href="/product" class="hover:underline">Product</a>
+<a href="/contact" class="hover:underline">Contact</a>
+<a href="/dashboard" class="text-white hover:text-gray-300">Dashboard</a>
+<a href="/attendance" class="text-white hover:text-gray-300">Absensi</a>
 </div>
 
 <div class="container" style="max-width: 800px; margin: auto;">
