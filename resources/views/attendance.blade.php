@@ -9,7 +9,7 @@
         display:inline-block;
         margin-bottom:20px;
         text-decoration:none;
-        background:#2c7be5;
+        background:#2c3e50;
         color:white;
         padding:8px 15px;
         border-radius:6px;
@@ -42,21 +42,25 @@
                 padding:8px 15px;
                 border:none;
                 border-radius:6px;
-                cursor:pointer;
             ">
                 Absen Masuk
             </button>
         </form>
 
         <!-- TABEL -->
-        <table style="width:100%; border-collapse:collapse;">
+        <table style="
+            width:100%;
+            border-collapse:collapse;
+            border-radius:10px;
+            overflow:hidden;
+        ">
             <thead>
-                <tr style="background:#f5f5f5;">
-                    <th style="padding:10px;">Nama</th>
-                    <th>Tanggal</th>
-                    <th>Masuk</th>
-                    <th>Pulang</th>
-                    <th>Aksi</th>
+                <tr>
+                    <th style="padding:10px; background:#2c3e50; color:white;">Nama</th>
+                    <th style="background:#2c3e50; color:white;">Tanggal</th>
+                    <th style="background:#2c3e50; color:white;">Masuk</th>
+                    <th style="background:#2c3e50; color:white;">Pulang</th>
+                    <th style="background:#2c3e50; color:white;">Aksi</th>
                 </tr>
             </thead>
 
