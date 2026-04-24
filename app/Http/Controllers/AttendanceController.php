@@ -4,40 +4,60 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Attendance;
+use Carbon\Carbon;
 
 class AttendanceController extends Controller
 {
-    // TAMPIL DATA
     public function index()
     {
-        $data = Attendance::all();
-        return view('attendance', compact('data'));
+        $data = Attendance::orderBy('tanggal', 'desc')->get();
+        return view('karyawan.riwayat', compact('data'));
     }
 
-    // ABSEN MASUK
+    public function rekap()
+    {
+        $data = Attendance::orderBy('tanggal', 'desc')->get();
+        return view('admin.rekap', compact('data'));
+    }
+
     public function masuk(Request $request)
     {
         $request->validate([
-            'nama' => 'required'
+            'nama' => 'required',
+            'latitude' => 'nullable',
+            'longitude' => 'nullable'
         ]);
 
         Attendance::create([
+            'user_id' => auth()->id() ?? 1,
             'nama' => $request->nama,
-            'tanggal' => date('Y-m-d'),
-            'jam_masuk' => date('H:i:s'),
+            'tanggal' => Carbon::now()->format('Y-m-d'),
+            'jam_masuk' => Carbon::now()->format('H:i:s'),
+            'status' => Carbon::now()->format('H:i') > '08:00' ? 'Terlambat' : 'Hadir',
+            'gps_status' => 'Verified',
         ]);
 
-        return redirect('/attendance');
+        return redirect()->route('karyawan.dashboard');
     }
 
-    // ABSEN PULANG
-    public function pulang($id)
+    public function pulang(Request $request)
     {
-        $data = Attendance::find($id);
-        $data->update([
-            'jam_pulang' => date('H:i:s')
-        ]);
+        $absen = Attendance::where('user_id', auth()->id() ?? 1)
+                            ->whereDate('tanggal', Carbon::today())
+                            ->whereNull('jam_pulang')
+                            ->first();
 
-        return redirect('/attendance');
+        if ($absen) {
+            $jamMasuk = Carbon::parse($absen->jam_masuk);
+            $jamPulang = Carbon::now();
+            $totalJam = $jamMasuk->diffInHours($jamPulang);
+
+            $absen->update([
+                'jam_pulang' => $jamPulang->format('H:i:s'),
+                'total_jam' => $totalJam
+            ]);
+        }
+
+        return redirect()->route('karyawan.dashboard');
     }
 }
