@@ -74,7 +74,7 @@ Route::prefix('admin')->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::get('/test-view', function () {
-    return view('welcome');
+    return view('welcome');}
 
 
 Route::get('/', [HomeController::class, 'index']);
