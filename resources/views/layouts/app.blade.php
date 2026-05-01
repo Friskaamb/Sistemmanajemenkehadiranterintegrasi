@@ -6,6 +6,81 @@
     <title>Sistem Kehadiran PT.DFL</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <title>Absensi App</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            margin: 0;
+            background: #f4f6f9;
+        }
+
+        .navbar {
+            background: #2c3e50;
+            padding: 15px;
+        }
+
+        .navbar a {
+            color: white;
+            margin-right: 15px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .container {
+            padding: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #3498db;
+            color: white;
+        }
+
+        td, th {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        tr:nth-child(even) {
+            background: #f2f2f2;
+        }
+
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        input {
+            padding: 8px;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .logout-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body class="bg-gray-50">
     <nav class="bg-white shadow-sm border-b sticky top-0 z-50">
@@ -35,6 +110,29 @@
             </div>
         </div>
     </nav>
+<body>
+
+<div class="navbar">
+    <a href="/home">Home</a>
+    <a href="/about">About</a>
+    <a href="/product">Product</a>
+    <a href="/contact">Contact</a>
+    <a href="/dashboard">Dashboard</a>
+    <a href="/attendance">Absensi</a>
+
+    @auth
+        <form action="{{ route('logout') }}" method="POST" style="display:inline;">
+            @csrf
+            <button type="submit" class="logout-btn">Logout</button>
+        </form>
+    @else
+        <a href="{{ route('login') }}">Login</a>
+    @endauth
+</div>
+
+<div class="container" style="max-width: 800px; margin: auto;">
+    @yield('content')
+</div>
 
     <main class="max-w-7xl mx-auto p-6">
         @yield('content')
