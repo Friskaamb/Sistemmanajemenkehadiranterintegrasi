@@ -12,65 +12,107 @@ use App\Http\Controllers\ProfileController;
 | 1. AUTHENTICATION (Login & Register)
 |--------------------------------------------------------------------------
 */
+
 Route::get('/', [LoginController::class, 'index'])->name('login');
-Route::get('/login', [LoginController::class, 'index']);
-Route::post('/login', [LoginController::class, 'proses_login']); // Logic login
-Route::get('/register', function () { return view('auth.register'); });
-Route::get('/logout', [LoginController::class, 'logout']);
+Route::get('/login', [LoginController::class, 'index'])->name('login.form');
+
+Route::post('/login', [LoginController::class, 'proses_login'])
+    ->name('proses.login');
+
+Route::get('/register', function () {
+    return view('auth.register');
+})->name('register');
+
+Route::get('/logout', [LoginController::class, 'logout'])
+    ->name('logout');
+
 
 /*
 |--------------------------------------------------------------------------
 | 2. PORTAL KARYAWAN (User Dashboard)
 |--------------------------------------------------------------------------
 */
+
 Route::prefix('karyawan')->group(function () {
-    // Foto 1: Beranda / Dashboard Utama
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('karyawan.dashboard');
-    
-    // Foto 2: Riwayat Kehadiran
-    Route::get('/riwayat', [AttendanceController::class, 'index'])->name('karyawan.riwayat');
-    
-    // Foto 3: Izin & Cuti
-    Route::get('/izin', [LeaveController::class, 'index'])->name('karyawan.izin');
-    Route::post('/izin/simpan', [LeaveController::class, 'store']); // Simpan pengajuan cuti
-    
-    // Foto 4: Profil & Ganti Password
-    Route::get('/profil', [ProfileController::class, 'index'])->name('karyawan.profil');
-    Route::post('/profil/update', [ProfileController::class, 'update']); // Update password/emergency contact
 
-    // Logic Tombol Absen (POST & GET)
-    Route::post('/absen/masuk', [AttendanceController::class, 'masuk']);
-    Route::post('/absen/pulang', [AttendanceController::class, 'pulang']);
+    // Dashboard
+    Route::get('/dashboard', [DashboardController::class, 'index'])
+        ->name('karyawan.dashboard');
+
+    // Riwayat Kehadiran
+    Route::get('/riwayat', [AttendanceController::class, 'index'])
+        ->name('karyawan.riwayat');
+
+    // Izin & Cuti
+    Route::get('/izin', [LeaveController::class, 'index'])
+        ->name('karyawan.izin');
+
+    Route::post('/izin/simpan', [LeaveController::class, 'store'])
+        ->name('karyawan.izin.simpan');
+
+    // Profil
+    Route::get('/profil', [ProfileController::class, 'index'])
+        ->name('karyawan.profil');
+
+    Route::post('/profil/update', [ProfileController::class, 'update'])
+        ->name('karyawan.profil.update');
+
+    // Absensi
+    Route::post('/absen/masuk', [AttendanceController::class, 'masuk'])
+        ->name('karyawan.absen.masuk');
+
+    Route::post('/absen/pulang', [AttendanceController::class, 'pulang'])
+        ->name('karyawan.absen.pulang');
+
+    Route::post('/karyawan/absen/masuk-webcam', [AttendanceController::class, 'masukWebcam']);
+Route::post('/karyawan/absen/pulang-webcam', [AttendanceController::class, 'pulangWebcam']);
 });
+
 
 /*
 |--------------------------------------------------------------------------
-| 3. ADMIN DASHBOARD (PT.DFL Management)
+| 3. ADMIN DASHBOARD
 |--------------------------------------------------------------------------
 */
+
 Route::prefix('admin')->group(function () {
-    // Foto Admin 1: Ringkasan & Analytics
-    Route::get('/dashboard', [DashboardController::class, 'admin'])->name('admin.dashboard');
 
-    // Foto Admin 2: Manajemen Data Karyawan
-    Route::get('/karyawan', [DashboardController::class, 'data_karyawan'])->name('admin.karyawan');
-    Route::post('/karyawan/tambah', [DashboardController::class, 'tambah_karyawan']);
+    // Dashboard Admin
+    Route::get('/dashboard', [DashboardController::class, 'admin'])
+        ->name('admin.dashboard');
 
-    // Foto Admin 3: Rekap Absensi Lengkap (Filter & GPS)
-    Route::get('/rekap', [AttendanceController::class, 'rekap'])->name('admin.rekap');
-    Route::get('/rekap/export-pdf', [AttendanceController::class, 'export_pdf']);
-    Route::get('/rekap/export-excel', [AttendanceController::class, 'export_excel']);
+    // Data Karyawan
+    Route::get('/karyawan', [DashboardController::class, 'data_karyawan'])
+        ->name('admin.karyawan');
 
-    // Foto Admin 4: Persetujuan Cuti
-    Route::get('/persetujuan', [LeaveController::class, 'persetujuan'])->name('admin.persetujuan');
-    Route::post('/persetujuan/update/{id}', [LeaveController::class, 'update_status']);
+    Route::post('/karyawan/tambah', [DashboardController::class, 'tambah_karyawan'])
+        ->name('admin.karyawan.tambah');
+
+    // Rekap Absensi
+    Route::get('/rekap', [AttendanceController::class, 'rekap'])
+        ->name('admin.rekap');
+
+    Route::get('/rekap/export-pdf', [AttendanceController::class, 'export_pdf'])
+        ->name('admin.rekap.pdf');
+
+    Route::get('/rekap/export-excel', [AttendanceController::class, 'export_excel'])
+        ->name('admin.rekap.excel');
+
+    // Persetujuan Cuti
+    Route::get('/persetujuan', [LeaveController::class, 'persetujuan'])
+        ->name('admin.persetujuan');
+
+    Route::post('/persetujuan/update/{id}', [LeaveController::class, 'update_status'])
+        ->name('admin.persetujuan.update');
 });
+
 
 /*
 |--------------------------------------------------------------------------
-| DEVELOPMENT ONLY (Test View)
+| DEVELOPMENT ONLY
 |--------------------------------------------------------------------------
 */
+
 Route::get('/test-view', function () {
     return view('welcome');
 });

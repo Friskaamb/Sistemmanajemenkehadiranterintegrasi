@@ -14,23 +14,37 @@ class LoginController extends Controller
 
     public function proses_login(Request $request)
     {
-        // Validasi input
         $request->validate([
             'email' => 'required|email',
             'password' => 'required',
         ]);
 
-        // Logic login dummy (nanti diganti pakai Auth::attempt)
-        if ($request->email == 'admin@ptdfl.com' && $request->password == 'admin123') {
-            return redirect()->route('admin.dashboard');
+        if (Auth::attempt([
+            'email' => $request->email,
+            'password' => $request->password
+        ])) {
+
+            $request->session()->regenerate();
+
+            $user = Auth::user();
+
+            if ($user->role == 'admin') {
+                return redirect()->route('admin.dashboard');
+            }
+
+            return redirect()->route('karyawan.dashboard');
         }
 
-        return redirect()->route('karyawan.dashboard');
+        return back()->with('error', 'Email atau Password salah');
     }
 
-    public function logout()
+    public function logout(Request $request)
     {
         Auth::logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
         return redirect('/login');
     }
 }

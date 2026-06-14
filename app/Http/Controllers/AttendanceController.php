@@ -5,59 +5,173 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Attendance;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class AttendanceController extends Controller
 {
     public function index()
     {
         $data = Attendance::orderBy('tanggal', 'desc')->get();
+
         return view('karyawan.riwayat', compact('data'));
     }
 
     public function rekap()
     {
         $data = Attendance::orderBy('tanggal', 'desc')->get();
+
         return view('admin.rekap', compact('data'));
     }
 
     public function masuk(Request $request)
     {
         $request->validate([
-            'nama' => 'required',
-            'latitude' => 'nullable',
-            'longitude' => 'nullable'
+            'foto' => 'required|image|mimes:jpg,jpeg,png|max:2048'
         ]);
+
+        $cekAbsen = Attendance::where('user_id', Auth::id())
+            ->whereDate('tanggal', Carbon::today())
+            ->first();
+
+        if ($cekAbsen) {
+            return back()->with('error', 'Anda sudah absen masuk hari ini');
+        }
+
+        $namaFoto = time() . '.' . $request->foto->extension();
+
+        $request->foto->move(
+            public_path('uploads/absensi'),
+            $namaFoto
+        );
 
         Attendance::create([
-            'user_id' => auth()->id() ?? 1,
-            'nama' => $request->nama,
+            'user_id' => Auth::id(),
+            'nama' => Auth::user()->name,
             'tanggal' => Carbon::now()->format('Y-m-d'),
             'jam_masuk' => Carbon::now()->format('H:i:s'),
-            'status' => Carbon::now()->format('H:i') > '08:00' ? 'Terlambat' : 'Hadir',
-            'gps_status' => 'Verified',
+            'foto_masuk' => $namaFoto,
+            'status' => Carbon::now()->format('H:i') > '08:00'
+                ? 'Terlambat'
+                : 'Hadir',
+            'gps_status' => 'Verified'
         ]);
 
-        return redirect()->route('karyawan.dashboard');
+        return redirect()
+            ->route('karyawan.dashboard')
+            ->with('success', 'Absen masuk berhasil');
     }
 
     public function pulang(Request $request)
     {
-        $absen = Attendance::where('user_id', auth()->id() ?? 1)
-                            ->whereDate('tanggal', Carbon::today())
-                            ->whereNull('jam_pulang')
-                            ->first();
+        $request->validate([
+            'foto' => 'required|image|mimes:jpg,jpeg,png|max:2048'
+        ]);
 
-        if ($absen) {
-            $jamMasuk = Carbon::parse($absen->jam_masuk);
-            $jamPulang = Carbon::now();
-            $totalJam = $jamMasuk->diffInHours($jamPulang);
+        $absen = Attendance::where('user_id', Auth::id())
+            ->whereDate('tanggal', Carbon::today())
+            ->first();
 
-            $absen->update([
-                'jam_pulang' => $jamPulang->format('H:i:s'),
-                'total_jam' => $totalJam
-            ]);
+        if (!$absen) {
+            return back()->with(
+                'error',
+                'Silakan absen masuk terlebih dahulu'
+            );
         }
 
-        return redirect()->route('karyawan.dashboard');
+        if ($absen->jam_pulang) {
+            return back()->with(
+                'error',
+                'Anda sudah absen pulang hari ini'
+            );
+        }
+
+        $namaFoto = 'pulang_' . time() . '.' .
+            $request->foto->extension();
+
+        $request->foto->move(
+            public_path('uploads/absensi'),
+            $namaFoto
+        );
+
+        $jamMasuk = Carbon::parse($absen->jam_masuk);
+        $jamPulang = Carbon::now();
+
+        $absen->update([
+            'jam_pulang' => $jamPulang->format('H:i:s'),
+            'foto_pulang' => $namaFoto,
+            'total_jam' => $jamMasuk->diffInHours($jamPulang)
+        ]);
+
+        return redirect()
+            ->route('karyawan.dashboard')
+            ->with('success', 'Absen pulang berhasil');
+    }
+    public function masukWebcam(Request $request)
+{
+    $image = $request->image;
+
+    $image = str_replace('data:image/png;base64,', '', $image);
+    $image = str_replace(' ', '+', $image);
+
+    $imageName = time() . '.png';
+
+    file_put_contents(
+        public_path('uploads/absensi/' . $imageName),
+        base64_decode($image)
+    );
+
+    Attendance::create([
+        'user_id' => auth()->id(),
+        'nama' => auth()->user()->name,
+        'tanggal' => now()->format('Y-m-d'),
+        'jam_masuk' => now()->format('H:i:s'),
+        'foto_masuk' => $imageName,
+        'status' => 'Hadir'
+    ]);
+
+    return response()->json([
+        'success' => true
+    ]);
+}
+
+public function pulangWebcam(Request $request)
+{
+    $image = $request->image;
+
+    $image = str_replace('data:image/png;base64,', '', $image);
+    $image = str_replace(' ', '+', $image);
+
+    $imageName = 'pulang_' . time() . '.png';
+
+    file_put_contents(
+        public_path('uploads/absensi/' . $imageName),
+        base64_decode($image)
+    );
+
+    $absen = Attendance::where('user_id', auth()->id())
+        ->whereDate('tanggal', now())
+        ->first();
+
+    if ($absen) {
+
+        $absen->update([
+            'jam_pulang' => now()->format('H:i:s'),
+            'foto_pulang' => $imageName
+        ]);
+    }
+
+    return response()->json([
+        'success' => true
+    ]);
+}
+
+    public function export_pdf()
+    {
+        return back()->with('success', 'Fitur export PDF belum dibuat');
+    }
+
+    public function export_excel()
+    {
+        return back()->with('success', 'Fitur export Excel belum dibuat');
     }
 }

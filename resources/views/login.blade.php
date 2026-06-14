@@ -1,14 +1,21 @@
-@extends('layouts.app')
+<form action="{{ route('proses.login') }}" method="POST">
+    @csrf
 
-@section('content')
+    <input
+        type="email"
+        name="email"
+        placeholder="Email"
+        required
+    >
 
-<div class="card">
-    <h1>Login</h1>
+    <input
+        type="password"
+        name="password"
+        placeholder="Password"
+        required
+    >
 
-    <input type="email" placeholder="Email">
-    <input type="password" placeholder="Password">
-
-    <button>Login</button>
-</div>
-
-@endsection
+    <button type="submit">
+        Login
+    </button>
+</form>
