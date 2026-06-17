@@ -87,7 +87,7 @@
                 </button>
 
                 <div class="text-center pt-2">
-                    <a href="#" class="text-sm text-blue-600 font-bold hover:underline">
+                    <a href="{{ route('password.request') }}" class="text-sm text-blue-600 font-bold hover:underline">
                         Lupa Kata Sandi?
                     </a>
                 </div>
