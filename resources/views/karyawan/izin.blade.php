@@ -3,6 +3,27 @@
 @section('content')
 <div class="grid md:grid-cols-3 gap-8">
     <div class="md:col-span-2 space-y-6">
+        @if(session('success'))
+<div class="bg-green-100 border border-green-300 text-green-700 px-4 py-3 rounded-xl mb-4">
+    {{ session('success') }}
+</div>
+@endif
+
+@if(session('error'))
+<div class="bg-red-100 border border-red-300 text-red-700 px-4 py-3 rounded-xl mb-4">
+    {{ session('error') }}
+</div>
+@endif
+
+@if($errors->any())
+<div class="bg-red-100 border border-red-300 text-red-700 px-4 py-3 rounded-xl mb-4">
+    <ul>
+        @foreach($errors->all() as $error)
+            <li>{{ $error }}</li>
+        @endforeach
+    </ul>
+</div>
+@endif
         <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
             <h2 class="text-2xl font-bold text-blue-900 mb-6">Ajukan Izin / Cuti</h2>
             
@@ -101,7 +122,10 @@
     <div class="space-y-6">
         <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 text-center">
             <p class="text-gray-400 text-sm font-medium mb-1">Sisa Kuota Cuti Tahunan</p>
-            <h4 class="text-5xl font-bold text-blue-900">8 <span class="text-lg text-gray-400">Hari</span></h4>
+            <h4 class="text-5xl font-bold text-blue-900">
+    {{ $sisaCuti }}
+    <span class="text-lg text-gray-400">Hari</span>
+</h4>
         </div>
         
         <div class="bg-blue-50 p-6 rounded-3xl border border-blue-100">
