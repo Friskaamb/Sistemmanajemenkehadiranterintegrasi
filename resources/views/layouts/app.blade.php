@@ -56,7 +56,7 @@
 
                 <div class="text-right hidden sm:block">
                     <p class="text-sm font-bold text-gray-800">
-                        {{ Auth::user()->name }}
+                        {{ Auth::user()->name ?? 'Guest' }}
                     </p>
 
                     <p class="text-[10px] text-gray-400">
@@ -65,7 +65,7 @@
                 </div>
 
                 <div class="w-10 h-10 bg-purple-500 rounded-full flex items-center justify-center text-white font-bold">
-                    {{ strtoupper(substr(Auth::user()->name,0,1)) }}
+                    {{ Auth::check() ? strtoupper(substr(Auth::user()->name,0,1)) : 'G' }}
                 </div>
 
                 <a href="{{ route('logout') }}"

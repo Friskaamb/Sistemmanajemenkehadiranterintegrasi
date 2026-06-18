@@ -40,9 +40,8 @@ Route::prefix('karyawan')->group(function () {
         ->name('karyawan.dashboard');
 
     // Riwayat Kehadiran
-    Route::get('/riwayat', [AttendanceController::class, 'index'])
-        ->name('karyawan.riwayat');
-
+    Route::get('/riwayat', [AttendanceController::class, 'riwayat'])
+        ->name('riwayat');
     // Izin & Cuti
     Route::get('/izin', [LeaveController::class, 'index'])
         ->name('karyawan.izin');
@@ -64,8 +63,11 @@ Route::prefix('karyawan')->group(function () {
     Route::post('/absen/pulang', [AttendanceController::class, 'pulang'])
         ->name('karyawan.absen.pulang');
 
-    Route::post('/karyawan/absen/masuk-webcam', [AttendanceController::class, 'masukWebcam']);
-Route::post('/karyawan/absen/pulang-webcam', [AttendanceController::class, 'pulangWebcam']);
+    Route::post('/absen/masuk-webcam', [AttendanceController::class, 'masukWebcam'])
+    ->name('karyawan.absen.masuk.webcam');
+
+Route::post('/absen/pulang-webcam', [AttendanceController::class, 'pulangWebcam'])
+    ->name('karyawan.absen.pulang.webcam');
 });
 
 

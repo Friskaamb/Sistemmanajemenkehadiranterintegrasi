@@ -57,17 +57,42 @@
                         </tr>
                     </thead>
                     <tbody class="text-gray-600">
-                        <tr class="border-b">
-                            <td class="py-4 font-medium">Cuti Tahunan</td>
-                            <td>10 Mei - 12 Mei</td>
-                            <td><span class="bg-yellow-100 text-yellow-600 px-3 py-1 rounded-full text-xs font-bold">Pending</span></td>
-                        </tr>
-                        <tr>
-                            <td class="py-4 font-medium">Sakit</td>
-                            <td>05 April</td>
-                            <td><span class="bg-green-100 text-green-600 px-3 py-1 rounded-full text-xs font-bold">Disetujui</span></td>
-                        </tr>
-                    </tbody>
+    @forelse($izins as $izin)
+    <tr class="border-b">
+        <td class="py-4 font-medium">
+            {{ $izin->jenis_izin }}
+        </td>
+
+        <td>
+            {{ $izin->tgl_mulai }}
+            -
+            {{ $izin->tgl_selesai }}
+        </td>
+
+        <td>
+            @if($izin->status == 'Pending')
+                <span class="bg-yellow-100 text-yellow-600 px-3 py-1 rounded-full text-xs font-bold">
+                    Pending
+                </span>
+            @elseif($izin->status == 'Disetujui')
+                <span class="bg-green-100 text-green-600 px-3 py-1 rounded-full text-xs font-bold">
+                    Disetujui
+                </span>
+            @else
+                <span class="bg-red-100 text-red-600 px-3 py-1 rounded-full text-xs font-bold">
+                    Ditolak
+                </span>
+            @endif
+        </td>
+    </tr>
+    @empty
+    <tr>
+        <td colspan="3" class="text-center py-4">
+            Belum ada pengajuan izin/cuti
+        </td>
+    </tr>
+    @endforelse
+</tbody>
                 </table>
             </div>
         </div>

@@ -17,28 +17,42 @@
                 </tr>
             </thead>
             <tbody class="text-gray-600 text-sm">
-                <tr class="border-b">
-                    <td class="py-5 font-medium">22 April 2026</td>
-                    <td>08:30</td>
-                    <td>17:15</td>
-                    <td>8.75</td>
-                    <td><span class="bg-green-100 text-green-600 px-4 py-1 rounded-full text-xs font-bold">Hadir</span></td>
-                </tr>
-                <tr class="border-b">
-                    <td class="py-5 font-medium">21 April 2026</td>
-                    <td>08:45</td>
-                    <td>17:30</td>
-                    <td>8.75</td>
-                    <td><span class="bg-green-100 text-green-600 px-4 py-1 rounded-full text-xs font-bold">Hadir</span></td>
-                </tr>
-                <tr class="border-b">
-                    <td class="py-5 font-medium text-orange-500 italic">20 April 2026</td>
-                    <td>09:15</td>
-                    <td>17:20</td>
-                    <td>8.08</td>
-                    <td><span class="bg-orange-100 text-orange-600 px-4 py-1 rounded-full text-xs font-bold">Terlambat</span></td>
-                </tr>
-            </tbody>
+    @forelse($attendances as $attendance)
+    <tr class="border-b">
+        <td class="py-5 font-medium">
+            {{ \Carbon\Carbon::parse($attendance->tanggal)->translatedFormat('d F Y') }}
+        </td>
+
+        <td>{{ $attendance->jam_masuk ?? '-' }}</td>
+
+        <td>{{ $attendance->jam_pulang ?? '-' }}</td>
+
+        <td>{{ $attendance->total_jam ?? '-' }}</td>
+
+        <td>
+            @if($attendance->status == 'Hadir')
+                <span class="bg-green-100 text-green-600 px-4 py-1 rounded-full text-xs font-bold">
+                    Hadir
+                </span>
+            @elseif($attendance->status == 'Terlambat')
+                <span class="bg-orange-100 text-orange-600 px-4 py-1 rounded-full text-xs font-bold">
+                    Terlambat
+                </span>
+            @else
+                <span class="bg-gray-100 text-gray-600 px-4 py-1 rounded-full text-xs font-bold">
+                    {{ $attendance->status }}
+                </span>
+            @endif
+        </td>
+    </tr>
+    @empty
+    <tr>
+        <td colspan="5" class="text-center py-5 text-gray-400">
+            Belum ada data absensi
+        </td>
+    </tr>
+    @endforelse
+</tbody>
         </table>
     </div>
 </div>

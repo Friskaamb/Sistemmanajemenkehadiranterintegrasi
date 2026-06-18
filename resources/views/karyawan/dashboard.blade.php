@@ -36,8 +36,8 @@
         </h4>
 
         <p class="text-2xl font-bold text-green-600 mt-2">
-            Belum Absen
-        </p>
+    {{ $absenHariIni ? $absenHariIni->jam_masuk : 'Belum Absen' }}
+</p>
     </div>
 
     <div class="bg-white rounded-3xl shadow p-6 border">
@@ -45,9 +45,9 @@
             Jam Pulang Hari Ini
         </h4>
 
-        <p class="text-2xl font-bold text-blue-600 mt-2">
-            Belum Absen
-        </p>
+       <p class="text-2xl font-bold text-blue-600 mt-2">
+    {{ $absenHariIni && $absenHariIni->jam_pulang ? $absenHariIni->jam_pulang : 'Belum Absen' }}
+</p>
     </div>
 
     <div class="bg-white rounded-3xl shadow p-6 border">
@@ -56,8 +56,8 @@
         </h4>
 
         <p class="text-2xl font-bold text-orange-500 mt-2">
-            Menunggu Absensi
-        </p>
+    {{ $absenHariIni ? $absenHariIni->status : 'Menunggu Absensi' }}
+</p>
     </div>
 
 </div>
@@ -66,44 +66,58 @@
 <div class="grid md:grid-cols-2 gap-8">
 
     {{-- ABSEN MASUK --}}
-    <div class="bg-white p-6 rounded-3xl shadow border">
+<div class="bg-white p-6 rounded-3xl shadow border">
 
-        <h3 class="text-2xl font-bold mb-4">
-            Absen Masuk
-        </h3>
+    <h3 class="text-2xl font-bold mb-4">
+        Absen Masuk
+    </h3>
 
-        <button
-            onclick="bukaKamera('masuk')"
-            aria-label="Absen Masuk"
-            class="w-full bg-green-500 hover:bg-green-600 text-white py-4 rounded-xl font-semibold transition">
+    @if(!$absenHariIni)
 
-            📸 Absen Masuk
+    <button
+        onclick="bukaKamera('masuk')"
+        class="w-full bg-green-500 hover:bg-green-600 text-white py-4 rounded-xl font-semibold transition">
 
-        </button>
+        📸 Absen Masuk
 
+    </button>
+
+    @else
+
+    <div class="text-green-600 font-semibold">
+        ✓ Sudah Absen Masuk
     </div>
 
-    {{-- ABSEN PULANG --}}
-    <div class="bg-white p-6 rounded-3xl shadow border">
-
-        <h3 class="text-2xl font-bold mb-4">
-            Absen Pulang
-        </h3>
-
-        <button
-            onclick="bukaKamera('pulang')"
-            aria-label="Absen Pulang"
-            class="w-full bg-blue-500 hover:bg-blue-600 text-white py-4 rounded-xl font-semibold transition">
-
-            📸 Absen Pulang
-
-        </button>
-
-    </div>
+    @endif
 
 </div>
 
+    {{-- ABSEN PULANG --}}
+<div class="bg-white p-6 rounded-3xl shadow border">
 
+    <h3 class="text-2xl font-bold mb-4">
+        Absen Pulang
+    </h3>
+
+    @if($absenHariIni && !$absenHariIni->jam_pulang)
+
+    <button
+        onclick="bukaKamera('pulang')"
+        class="w-full bg-blue-500 hover:bg-blue-600 text-white py-4 rounded-xl font-semibold transition">
+
+        📸 Absen Pulang
+
+    </button>
+
+    @elseif($absenHariIni && $absenHariIni->jam_pulang)
+
+    <div class="text-blue-600 font-semibold">
+        ✓ Sudah Absen Pulang
+    </div>
+
+    @endif
+
+</div>
 <div
     id="modalMasuk"
     class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
@@ -303,20 +317,42 @@ function ambilFoto(jenis)
         canvas.height
     );
 
-    const image =
-        canvas.toDataURL(
-            'image/png'
+    const image = canvas.toDataURL('image/png');
+
+fetch(
+    jenis === 'masuk'
+        ? '/karyawan/absen/masuk-webcam'
+        : '/karyawan/absen/pulang-webcam',
+{
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+    },
+    body: JSON.stringify({
+        image: image
+    })
+})
+.then(response => response.json())
+.then(data => {
+
+    if(data.success)
+    {
+        alert(
+            jenis === 'masuk'
+                ? 'Absen masuk berhasil'
+                : 'Absen pulang berhasil'
         );
 
-    console.log(image);
+        location.reload();
+    }
+})
+.catch(error => {
+    console.log(error);
+    alert('Gagal menyimpan absensi');
+});
 
-    alert(
-        jenis === 'masuk'
-            ? 'Foto absen masuk berhasil diambil'
-            : 'Foto absen pulang berhasil diambil'
-    );
-
-    tutupKamera(jenis);
+tutupKamera(jenis);
 }
 
 /*

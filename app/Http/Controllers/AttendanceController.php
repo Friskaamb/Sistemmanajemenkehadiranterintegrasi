@@ -115,19 +115,32 @@ class AttendanceController extends Controller
 
     $imageName = time() . '.png';
 
+    $folder = public_path('uploads/absensi');
+
+    if (!file_exists($folder)) {
+        mkdir($folder, 0777, true);
+    }
+
     file_put_contents(
-        public_path('uploads/absensi/' . $imageName),
+        $folder . '/' . $imageName,
         base64_decode($image)
     );
 
-    Attendance::create([
-        'user_id' => auth()->id(),
-        'nama' => auth()->user()->name,
-        'tanggal' => now()->format('Y-m-d'),
-        'jam_masuk' => now()->format('H:i:s'),
-        'foto_masuk' => $imageName,
-        'status' => 'Hadir'
-    ]);
+    $jamMasuk = now();
+
+$status = $jamMasuk->format('H:i:s') > '08:00:00'
+    ? 'Terlambat'
+    : 'Hadir';
+
+Attendance::create([
+    'user_id' => auth()->id(),
+    'nama' => auth()->user()->name,
+    'tanggal' => now()->format('Y-m-d'),
+    'jam_masuk' => $jamMasuk->format('H:i:s'),
+    'foto_masuk' => $imageName,
+    'status' => $status,
+    'gps_status' => 'Verified'
+]);
 
     return response()->json([
         'success' => true
@@ -143,8 +156,14 @@ public function pulangWebcam(Request $request)
 
     $imageName = 'pulang_' . time() . '.png';
 
+    $folder = public_path('uploads/absensi');
+
+    if (!file_exists($folder)) {
+        mkdir($folder, 0777, true);
+    }
+
     file_put_contents(
-        public_path('uploads/absensi/' . $imageName),
+        $folder . '/' . $imageName,
         base64_decode($image)
     );
 
@@ -153,11 +172,17 @@ public function pulangWebcam(Request $request)
         ->first();
 
     if ($absen) {
+        $jamPulang = now();
 
-        $absen->update([
-            'jam_pulang' => now()->format('H:i:s'),
-            'foto_pulang' => $imageName
-        ]);
+$statusPulang = $jamPulang->format('H:i:s') < '17:00:00'
+    ? 'Pulang Cepat'
+    : 'Normal';
+
+$absen->update([
+    'jam_pulang' => $jamPulang->format('H:i:s'),
+    'foto_pulang' => $imageName,
+    'status_pulang' => $statusPulang
+]);
     }
 
     return response()->json([
@@ -174,4 +199,13 @@ public function pulangWebcam(Request $request)
     {
         return back()->with('success', 'Fitur export Excel belum dibuat');
     }
+    public function riwayat()
+{
+    $attendances = Attendance::where('user_id', auth()->id())
+        ->latest()
+        ->take(5)
+        ->get();
+
+    return view('karyawan.riwayat', compact('attendances'));
+}
 }

@@ -7,17 +7,17 @@ use App\Models\Attendance;
 use App\Models\User;
 use App\Models\Leave;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
     public function index()
-    {
-        $kehadiranBulanIni = 18; 
-        $sisaCuti = 8;
-        $keterlambatan = 2;
+{
+    $absenHariIni = Attendance::whereDate('tanggal', today())
+    ->first();
+    return view('karyawan.dashboard', compact('absenHariIni'));
+}
 
-        return view('karyawan.dashboard', compact('kehadiranBulanIni', 'sisaCuti', 'keterlambatan'));
-    }
 
     public function admin()
     {

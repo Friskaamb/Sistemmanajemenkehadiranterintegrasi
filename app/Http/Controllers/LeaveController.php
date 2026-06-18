@@ -4,13 +4,17 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Leave;
-use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class LeaveController extends Controller
 {
     public function index()
     {
-        return view('karyawan.izin');
+        $izins = Leave::where('user_id', Auth::id())
+            ->latest()
+            ->get();
+
+        return view('karyawan.izin', compact('izins'));
     }
 
     public function store(Request $request)
@@ -20,48 +24,32 @@ class LeaveController extends Controller
             'tgl_mulai' => 'required|date',
             'tgl_selesai' => 'required|date',
             'alasan' => 'required',
-            'lampiran' => 'nullable|image|mimes:jpg,png,jpeg,pdf|max:2048'
+            'lampiran' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048'
         ]);
 
         $namaFile = null;
+
         if ($request->hasFile('lampiran')) {
-            $namaFile = time() . '_' . $request->file('lampiran')->getClientOriginalName();
+            $namaFile = time().'_'.$request->file('lampiran')->getClientOriginalName();
             $request->file('lampiran')->move(public_path('uploads'), $namaFile);
         }
 
-        return back();
+        Leave::create([
+            'user_id' => Auth::id(),
+            'jenis_izin' => $request->jenis_izin,
+            'tgl_mulai' => $request->tgl_mulai,
+            'tgl_selesai' => $request->tgl_selesai,
+            'alasan' => $request->alasan,
+            'lampiran' => $namaFile,
+            'status' => 'Pending'
+        ]);
+
+        return back()->with('success', 'Pengajuan berhasil dikirim');
     }
 
     public function persetujuan()
     {
-        $permintaan = [
-            [
-                'nama' => 'Budi Santoso', 
-                'nik' => 'EMP-2024-015', 
-                'jenis' => 'Cuti Tahunan', 
-                'tgl' => '25-27 April 2026', 
-                'alasan' => 'Liburan keluarga', 
-                'initial' => 'BS'
-            ],
-            [
-                'nama' => 'Ani Wijaya', 
-                'nik' => 'EMP-2024-032', 
-                'jenis' => 'Sakit', 
-                'tgl' => '23 April 2026', 
-                'alasan' => 'Demam dan flu', 
-                'initial' => 'AW'
-            ],
-            [
-                'nama' => 'Rudi Hartono', 
-                'nik' => 'EMP-2024-048', 
-                'jenis' => 'Izin Pribadi', 
-                'tgl' => '24 April 2026', 
-                'alasan' => 'Keperluan keluarga', 
-                'initial' => 'RH'
-            ],
-        ];
-
-        return view('admin.persetujuan', compact('permintaan'));
+        return view('admin.persetujuan');
     }
 
     public function update_status(Request $request, $id)
