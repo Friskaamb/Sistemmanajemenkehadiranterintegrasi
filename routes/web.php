@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\RegisterController;
+use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\LeaveController;
@@ -19,9 +21,13 @@ Route::get('/login', [LoginController::class, 'index'])->name('login.form');
 Route::post('/login', [LoginController::class, 'proses_login'])
     ->name('proses.login');
 
-Route::get('/register', function () {
-    return view('auth.register');
-})->name('register');
+Route::get('/register', [RegisterController::class, 'index'])->name('register');
+Route::post('/register', [RegisterController::class, 'store'])->name('register.store');
+
+Route::get('/forgot-password', [ForgotPasswordController::class, 'showForm'])->name('password.request');
+Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLink'])->name('password.email');
+Route::get('/reset-password/{token}/{email}', [ForgotPasswordController::class, 'showResetForm'])->name('password.reset');
+Route::post('/reset-password', [ForgotPasswordController::class, 'resetPassword'])->name('password.update');
 
 Route::get('/logout', [LoginController::class, 'logout'])
     ->name('logout');
@@ -33,7 +39,7 @@ Route::get('/logout', [LoginController::class, 'logout'])
 |--------------------------------------------------------------------------
 */
 
-Route::prefix('karyawan')->group(function () {
+Route::middleware('auth')->prefix('karyawan')->group(function () {
 
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])
@@ -77,7 +83,7 @@ Route::post('/absen/pulang-webcam', [AttendanceController::class, 'pulangWebcam'
 |--------------------------------------------------------------------------
 */
 
-Route::prefix('admin')->group(function () {
+Route::middleware('auth')->prefix('admin')->group(function () {
 
     // Dashboard Admin
     Route::get('/dashboard', [DashboardController::class, 'admin'])
@@ -87,8 +93,9 @@ Route::prefix('admin')->group(function () {
     Route::get('/karyawan', [DashboardController::class, 'data_karyawan'])
         ->name('admin.karyawan');
 
-    Route::post('/karyawan/tambah', [DashboardController::class, 'tambah_karyawan'])
-        ->name('admin.karyawan.tambah');
+    // Note: tambah_karyawan functionality pending implementation
+    // Route::post('/karyawan/tambah', [DashboardController::class, 'tambah_karyawan'])
+    //     ->name('admin.karyawan.tambah');
 
     // Rekap Absensi
     Route::get('/rekap', [AttendanceController::class, 'rekap'])
