@@ -19,12 +19,33 @@
                 </div>
             </div>
             
-            <div class="hidden md:flex space-x-6 text-gray-500 font-semibold text-sm">
-                <a href="/admin/dashboard" class="bg-blue-900 text-white px-4 py-2 rounded-xl flex items-center gap-2"><i class="fas fa-chart-pie"></i> Monitoring Kehadiran</a>
-                <a href="/admin/karyawan" class="hover:text-blue-900 transition flex items-center gap-2 px-2"><i class="fas fa-users"></i> Data Karyawan</a>
-                <a href="/admin/rekap" class="hover:text-blue-900 transition flex items-center gap-2 px-2"><i class="fas fa-file-alt"></i> Rekap Absensi</a>
-                <a href="/admin/persetujuan" class="hover:text-blue-900 transition flex items-center gap-2 px-2"><i class="fas fa-check-square"></i> Persetujuan Cuti</a>
-            </div>
+            <nav class="flex items-center gap-4">
+
+    <a href="{{ route('admin.dashboard') }}"
+       class="{{ request()->routeIs('admin.dashboard') ? 'bg-blue-900 text-white px-6 py-3 rounded-xl font-semibold flex items-center gap-2' : 'text-gray-500 px-6 py-3 rounded-xl hover:bg-gray-100 flex items-center gap-2' }}">
+        <i class="fas fa-chart-pie"></i>
+        Monitoring Kehadiran
+    </a>
+
+    <a href="{{ route('admin.karyawan') }}"
+       class="{{ request()->routeIs('admin.karyawan') ? 'bg-blue-900 text-white px-6 py-3 rounded-xl font-semibold flex items-center gap-2' : 'text-gray-500 px-6 py-3 rounded-xl hover:bg-gray-100 flex items-center gap-2' }}">
+        <i class="fas fa-users"></i>
+        Data Karyawan
+    </a>
+
+    <a href="{{ route('admin.rekap') }}"
+       class="{{ request()->routeIs('admin.rekap') ? 'bg-blue-900 text-white px-6 py-3 rounded-xl font-semibold flex items-center gap-2' : 'text-gray-500 px-6 py-3 rounded-xl hover:bg-gray-100 flex items-center gap-2' }}">
+        <i class="fas fa-file-alt"></i>
+        Rekap Absensi
+    </a>
+
+    <a href="{{ route('admin.persetujuan') }}"
+       class="{{ request()->routeIs('admin.persetujuan') ? 'bg-blue-900 text-white px-6 py-3 rounded-xl font-semibold flex items-center gap-2' : 'text-gray-500 px-6 py-3 rounded-xl hover:bg-gray-100 flex items-center gap-2' }}">
+        <i class="fas fa-check-square"></i>
+        Persetujuan Cuti
+    </a>
+
+</nav>
 
             <div class="flex items-center gap-3">
                 <div class="text-right hidden sm:block">

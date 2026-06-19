@@ -72,8 +72,9 @@ Route::middleware('auth')->prefix('karyawan')->group(function () {
     Route::post('/absen/masuk-webcam', [AttendanceController::class, 'masukWebcam'])
     ->name('karyawan.absen.masuk.webcam');
 
-Route::post('/absen/pulang-webcam', [AttendanceController::class, 'pulangWebcam'])
+    Route::post('/absen/pulang-webcam', [AttendanceController::class, 'pulangWebcam'])
     ->name('karyawan.absen.pulang.webcam');
+    
 });
 
 
@@ -92,6 +93,10 @@ Route::middleware('auth')->prefix('admin')->group(function () {
     // Data Karyawan
     Route::get('/karyawan', [DashboardController::class, 'data_karyawan'])
         ->name('admin.karyawan');
+    Route::get('/karyawan/create', [DashboardController::class, 'create_karyawan'])
+    ->name('admin.karyawan.create');
+    Route::post('/karyawan/store', [DashboardController::class, 'storeKaryawan'])
+    ->name('admin.karyawan.store');
 
     // Note: tambah_karyawan functionality pending implementation
     // Route::post('/karyawan/tambah', [DashboardController::class, 'tambah_karyawan'])

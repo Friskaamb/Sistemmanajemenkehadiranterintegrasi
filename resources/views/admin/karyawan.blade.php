@@ -1,6 +1,11 @@
 @extends('layouts.admin')
 
 @section('content')
+@if(session('success'))
+<div class="mb-6 bg-green-100 border border-green-300 text-green-700 px-4 py-3 rounded-xl">
+    {{ session('success') }}
+</div>
+@endif
 <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
     <div>
         <h2 class="text-3xl font-bold text-blue-900 leading-tight">Manajemen Data Karyawan</h2>
@@ -10,9 +15,11 @@
         <button class="bg-white border border-gray-200 text-gray-700 px-6 py-3 rounded-xl font-bold hover:bg-gray-50 flex items-center gap-2 shadow-sm">
             <i class="fas fa-file-import"></i> Import Excel
         </button>
-        <button class="bg-blue-900 text-white px-6 py-3 rounded-xl font-bold hover:bg-black flex items-center gap-2 shadow-lg shadow-blue-100">
-            <i class="fas fa-plus"></i> Tambah Karyawan Baru
-        </button>
+        <a href="{{ route('admin.karyawan.create') }}"
+   class="bg-blue-900 text-white px-6 py-3 rounded-xl font-bold hover:bg-black flex items-center gap-2 shadow-lg shadow-blue-100">
+    <i class="fas fa-plus"></i>
+    Tambah Karyawan Baru
+</a> 
     </div>
 </div>
 
@@ -58,31 +65,23 @@
                 </tr>
             </thead>
             <tbody class="text-gray-600 text-sm">
-                @php
-                    $karyawans = [
-                        ['nama' => 'Sarah Johnson', 'nik' => 'EMP-2024-001', 'divisi' => 'IT', 'jabatan' => 'Senior Developer', 'email' => 'sarah.j@ptdfl.com', 'status' => 'Aktif', 'initial' => 'SJ'],
-                        ['nama' => 'Michael Chen', 'nik' => 'EMP-2024-002', 'divisi' => 'Marketing', 'jabatan' => 'Marketing Manager', 'email' => 'michael.c@ptdfl.com', 'status' => 'Aktif', 'initial' => 'MC'],
-                        ['nama' => 'Robert Wilson', 'nik' => 'EMP-2024-006', 'divisi' => 'Marketing', 'jabatan' => 'Content Creator', 'email' => 'robert.w@ptdfl.com', 'status' => 'Non-Aktif', 'initial' => 'RW'],
-                    ];
-                @endphp
+                
 
                 @foreach($karyawans as $k)
                 <tr class="border-b hover:bg-gray-50 transition">
                     <td class="px-6 py-4"><input type="checkbox" class="rounded"></td>
                     <td class="px-6 py-4 flex items-center gap-3">
-                        <div class="w-10 h-10 bg-blue-100 text-blue-900 rounded-full flex items-center justify-center font-bold text-xs">{{ $k['initial'] }}</div>
-                        <span class="font-bold text-gray-800">{{ $k['nama'] }}</span>
+                        <div class="w-10 h-10 bg-blue-100 text-blue-900 rounded-full flex items-center justify-center font-bold text-xs">{{ strtoupper(substr($k->name,0,1)) }}</div>
+                        <span class="font-bold text-gray-800">{{ $k->name }}</span>
                     </td>
-                    <td class="px-6 py-4 font-mono text-xs">{{ $k['nik'] }}</td>
+                    <td class="px-6 py-4 font-mono text-xs">{{ $k->nik }}</td>
                     <td class="px-6 py-4">
-                        <p class="font-bold text-gray-800">{{ $k['divisi'] }}</p>
-                        <p class="text-[10px] text-gray-400">{{ $k['jabatan'] }}</p>
+                        <p class="font-bold text-gray-800">{{ $k->division->nama_divisi ?? '-' }}</p>
+                        <p class="text-gray-400 text-xs">{{ $k->role }}</p>
                     </td>
-                    <td class="px-6 py-4 text-xs">{{ $k['email'] }}</td>
+                    <td class="px-6 py-4 text-xs">{{ $k->email }}</td>
                     <td class="px-6 py-4">
-                        <span class="{{ $k['status'] == 'Aktif' ? 'bg-emerald-100 text-emerald-600' : 'bg-gray-100 text-gray-400' }} px-3 py-1 rounded-full text-[10px] font-bold">
-                            {{ $k['status'] }}
-                        </span>
+                       <span class="bg-emerald-100 text-emerald-600 px-3 py-1 rounded-full text-[10px] font-bold">Aktif</span>
                     </td>
                     <td class="px-6 py-4 text-center space-x-2">
                         <button class="text-gray-400 hover:text-blue-600"><i class="far fa-eye"></i></button>
