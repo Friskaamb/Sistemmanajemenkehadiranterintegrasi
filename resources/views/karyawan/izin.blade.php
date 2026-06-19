@@ -71,40 +71,58 @@
             <div class="overflow-x-auto">
                 <table class="w-full text-left text-sm">
                     <thead>
-                        <tr class="text-gray-400 border-b">
-                            <th class="pb-3">Jenis</th>
-                            <th class="pb-3">Tanggal</th>
-                            <th class="pb-3">Status</th>
-                        </tr>
-                    </thead>
+    <tr class="text-gray-400 border-b">
+        <th class="pb-3">Jenis</th>
+        <th class="pb-3">Tanggal</th>
+        <th class="pb-3">Alasan</th>
+        <th class="pb-3">Lampiran</th>
+        <th class="pb-3">Status</th>
+    </tr>
+</thead>
                     <tbody class="text-gray-600">
     @forelse($izins as $izin)
     <tr class="border-b">
         <td class="py-4 font-medium">
-            {{ $izin->jenis_izin }}
-        </td>
+    {{ $izin->jenis_izin }}
+</td>
 
-        <td>
-            {{ $izin->tgl_mulai }}
-            -
-            {{ $izin->tgl_selesai }}
-        </td>
+<td>
+    {{ \Carbon\Carbon::parse($izin->tgl_mulai)->format('d M Y') }}
+    -
+    {{ \Carbon\Carbon::parse($izin->tgl_selesai)->format('d M Y') }}
+</td>
 
-        <td>
-            @if($izin->status == 'Pending')
-                <span class="bg-yellow-100 text-yellow-600 px-3 py-1 rounded-full text-xs font-bold">
-                    Pending
-                </span>
-            @elseif($izin->status == 'Disetujui')
-                <span class="bg-green-100 text-green-600 px-3 py-1 rounded-full text-xs font-bold">
-                    Disetujui
-                </span>
-            @else
-                <span class="bg-red-100 text-red-600 px-3 py-1 rounded-full text-xs font-bold">
-                    Ditolak
-                </span>
-            @endif
-        </td>
+<td>
+    {{ $izin->alasan }}
+</td>
+
+<td>
+    @if($izin->lampiran)
+        <a href="{{ asset('uploads/'.$izin->lampiran) }}"
+           target="_blank"
+           class="text-blue-600 font-semibold">
+           Lihat File
+        </a>
+    @else
+        -
+    @endif
+</td>
+
+<td>
+    @if($izin->status == 'Pending')
+        <span class="bg-yellow-100 text-yellow-600 px-3 py-1 rounded-full text-xs font-bold">
+            Pending
+        </span>
+    @elseif($izin->status == 'Disetujui')
+        <span class="bg-green-100 text-green-600 px-3 py-1 rounded-full text-xs font-bold">
+            Disetujui
+        </span>
+    @else
+        <span class="bg-red-100 text-red-600 px-3 py-1 rounded-full text-xs font-bold">
+            Ditolak
+        </span>
+    @endif
+</td>
     </tr>
     @empty
     <tr>

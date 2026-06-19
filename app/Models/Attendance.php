@@ -18,4 +18,8 @@ class Attendance extends Model
         'gps_status',
         'total_jam'
     ];
+    public function user()
+{
+    return $this->belongsTo(User::class);
+}
 }

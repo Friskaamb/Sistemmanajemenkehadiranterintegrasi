@@ -24,7 +24,7 @@ class User extends Authenticatable
         'password',
         'nik',
         'role',
-        'department_id',
+        'division_id',
         'phone',
         'address',
         'photo',
