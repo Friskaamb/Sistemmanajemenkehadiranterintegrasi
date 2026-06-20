@@ -10,6 +10,9 @@ use App\Models\Division;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use App\Exports\KaryawanExport;
+use Maatwebsite\Excel\Facades\Excel;
+
 
 class DashboardController extends Controller
 {
@@ -70,11 +73,23 @@ $divisions = Division::withCount('users')->get();
 ));
 }
 
-   public function data_karyawan()
+   public function data_karyawan(Request $request)
 {
+    $search = $request->search;
+    $division = $request->division;
+
     $karyawans = User::with('division')
         ->where('role', '!=', 'admin')
-        ->get();
+
+        ->when($search, function ($query) use ($search) {
+            $query->where('name', 'like', "%{$search}%")
+                  ->orWhere('nik', 'like', "%{$search}%");
+        })
+
+        ->when($division, function ($query) use ($division) {
+            $query->where('division_id', $division);
+        }) 
+        ->paginate(10);
 
     $divisions = Division::all();
 
@@ -112,4 +127,58 @@ public function storekaryawan(Request $request)
     return redirect()
     ->route('admin.karyawan')
     ->with('success', 'Karyawan berhasil ditambahkan');}
+
+    public function destroyKaryawan($id)
+{
+    $karyawan = User::findOrFail($id);
+
+    $karyawan->delete();
+
+    return redirect()
+        ->route('admin.karyawan')
+        ->with('success', 'Karyawan berhasil dihapus');
+}
+
+public function editKaryawan($id)
+{
+    $karyawan = User::findOrFail($id);
+    $divisions = Division::all();
+
+    return view('admin.edit_karyawan', compact(
+        'karyawan',
+        'divisions'
+    ));
+}
+
+public function updateKaryawan(Request $request, $id)
+{
+    $karyawan = User::findOrFail($id);
+
+    $request->validate([
+        'name' => 'required',
+        'email' => 'required|email',
+        'nik' => 'required',
+        'division_id' => 'required'
+    ]);
+
+    $karyawan->update([
+        'name' => $request->name,
+        'email' => $request->email,
+        'nik' => $request->nik,
+        'division_id' => $request->division_id,
+    ]);
+
+    return redirect()
+        ->route('admin.karyawan')
+        ->with('success', 'Data karyawan berhasil diperbarui');
+}
+
+
+public function exportKaryawan()
+{
+    return Excel::download(
+        new KaryawanExport,
+        'data_karyawan.xlsx'
+    );
+}
 }

@@ -97,6 +97,15 @@ Route::middleware('auth')->prefix('admin')->group(function () {
     ->name('admin.karyawan.create');
     Route::post('/karyawan/store', [DashboardController::class, 'storeKaryawan'])
     ->name('admin.karyawan.store');
+    Route::get('/karyawan/export',[DashboardController::class, 'exportKaryawan'])
+    ->name('admin.karyawan.export');
+    Route::delete('/karyawan/{id}', [DashboardController::class, 'destroyKaryawan'])
+    ->name('admin.karyawan.destroy');
+    Route::get('/karyawan/{id}/edit', [DashboardController::class, 'editKaryawan'])
+    ->name('admin.karyawan.edit');
+    Route::put('/karyawan/{id}', [DashboardController::class, 'updateKaryawan'])
+    ->name('admin.karyawan.update');
+    
 
     // Note: tambah_karyawan functionality pending implementation
     // Route::post('/karyawan/tambah', [DashboardController::class, 'tambah_karyawan'])
