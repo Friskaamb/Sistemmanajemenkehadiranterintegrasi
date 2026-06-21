@@ -43,33 +43,27 @@ class DashboardController extends Controller
 {
     $totalKaryawan = User::where('role', 'karyawan')->count();
 
-    $hadirHariIni = Attendance::whereDate(
-        'tanggal',
-        today()
-    )->count();
+    $hadirHariIni = Attendance::whereDate('tanggal',today())->count();
 
-    $terlambat = Attendance::whereDate(
-        'tanggal',
-        today()
-    )
+    $terlambat = Attendance::whereDate('tanggal',today())
     ->where('status', 'Terlambat')
     ->count();
 
-    $tidakHadir = max(
-        0,
-        $totalKaryawan - $hadirHariIni
-    );
+    $tidakHadir = max(0,$totalKaryawan - $hadirHariIni);
     $absensiTerbaru = Attendance::latest()
     ->take(10)
     ->get();
-$divisions = Division::withCount('users')->get();
+    $cutiPending = Leave::where('status', 'Pending')->count();
+
+    $divisions = Division::withCount('users')->get();
     return view('admin.dashboard', compact(
     'totalKaryawan',
     'hadirHariIni',
     'terlambat',
     'tidakHadir',
     'absensiTerbaru',
-    'divisions'
+    'divisions',
+    'cutiPending'
 ));
 }
 

@@ -23,7 +23,7 @@
     </h2>
 
     <p class="mt-2 text-blue-100">
-        {{ now()->translatedFormat('d F Y') }}
+        {{ \Carbon\Carbon::now()->locale('id')->translatedFormat('l, d F Y') }}
     </p>
 </div>
 
