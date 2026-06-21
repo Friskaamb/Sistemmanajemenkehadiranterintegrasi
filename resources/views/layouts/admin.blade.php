@@ -53,7 +53,10 @@
                     <p class="text-[10px] text-gray-400">Human Resource</p>
                 </div>
                 <div class="w-10 h-10 bg-blue-900 rounded-full flex items-center justify-center text-white font-bold border-2 border-gray-100">AD</div>
-                <button class="text-gray-400 hover:text-red-500 ml-2"><i class="fas fa-sign-out-alt"></i></button>
+                <a href="{{ route('logout') }}"
+   class="text-red-500 hover:text-red-600">
+    <i class="fas fa-sign-out-alt"></i>
+</a>
             </div>
         </div>
     </nav>

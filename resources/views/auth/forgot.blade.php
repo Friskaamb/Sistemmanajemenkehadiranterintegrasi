@@ -7,9 +7,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
-<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+<body class="bg-gray-100 flex items-center justify-center min-h-screen px-4">
 
-    <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl p-8">
+    <div class="bg-white w-full max-w-3xl rounded-3xl shadow-2xl p-8">
 
         <!-- Header -->
         <div class="text-center mb-8">
@@ -24,10 +24,10 @@
         </div>
 
         @if(session('status'))
-            <div class="mb-4 p-4 bg-green-100 text-green-700 rounded-lg">
-                ✅ {{ session('status') }}
-            </div>
-        @endif
+    <div class="mb-4 p-4 bg-green-100 text-green-700 rounded-lg break-words">
+        ✅ {{ session('status') }}
+    </div>
+@endif
 
         @if($errors->any())
             <div class="mb-4 p-4 bg-red-100 text-red-700 rounded-lg">
