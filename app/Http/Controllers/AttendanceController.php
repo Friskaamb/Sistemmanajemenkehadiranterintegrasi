@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Attendance;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use App\Exports\RekapExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class AttendanceController extends Controller
 {
@@ -16,12 +18,23 @@ class AttendanceController extends Controller
         return view('karyawan.riwayat', compact('data'));
     }
 
-    public function rekap()
-    {
-        $data = Attendance::orderBy('tanggal', 'desc')->get();
+    public function rekap(Request $request)
+{
+    $data = Attendance::with('user')
 
-        return view('admin.rekap', compact('data'));
-    }
+        ->when($request->tanggal, function ($query) use ($request) {
+            $query->whereDate('tanggal', $request->tanggal);
+        })
+
+        ->when($request->status, function ($query) use ($request) {
+            $query->where('status', $request->status);
+        })
+
+        ->orderBy('tanggal', 'desc')
+        ->get();
+
+    return view('admin.rekap', compact('data'));
+}
 
     public function masuk(Request $request)
     {
@@ -53,7 +66,6 @@ class AttendanceController extends Controller
             'status' => Carbon::now()->format('H:i') > '08:00'
                 ? 'Terlambat'
                 : 'Hadir',
-            'gps_status' => 'Verified'
         ]);
 
         return redirect()
@@ -139,7 +151,6 @@ Attendance::create([
     'jam_masuk' => $jamMasuk->format('H:i:s'),
     'foto_masuk' => $imageName,
     'status' => $status,
-    'gps_status' => 'Verified'
 ]);
 
     return response()->json([
@@ -190,15 +201,17 @@ $absen->update([
     ]);
 }
 
-    public function export_pdf()
-    {
-        return back()->with('success', 'Fitur export PDF belum dibuat');
-    }
+    public function export_excel(Request $request)
+{
+    return Excel::download(
+        new RekapExport(
+            $request->tanggal,
+            $request->status
+        ),
+        'rekap_absensi.xlsx'
+    );
+}
 
-    public function export_excel()
-    {
-        return back()->with('success', 'Fitur export Excel belum dibuat');
-    }
     public function riwayat()
 {
     $attendances = Attendance::where('user_id', auth()->id())

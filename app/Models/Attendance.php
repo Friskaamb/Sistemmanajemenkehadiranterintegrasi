@@ -15,7 +15,6 @@ class Attendance extends Model
         'foto_masuk',
         'foto_pulang',
         'status',
-        'gps_status',
         'total_jam'
     ];
     public function user()

@@ -174,11 +174,35 @@ public function updateKaryawan(Request $request, $id)
 }
 
 
-public function exportKaryawan()
+public function exportKaryawan(Request $request)
 {
     return Excel::download(
-        new KaryawanExport,
+        new KaryawanExport(
+            $request->search,
+            $request->division
+        ),
         'data_karyawan.xlsx'
     );
+}
+
+public function rekap(Request $request)
+{
+    $tanggal = $request->tanggal;
+    $status = $request->status;
+
+    $data = Attendance::with('user')
+
+        ->when($tanggal, function ($query) use ($tanggal) {
+            $query->whereDate('tanggal', $tanggal);
+        })
+
+        ->when($status, function ($query) use ($status) {
+            $query->where('status', $status);
+        })
+
+        ->orderBy('tanggal', 'desc')
+        ->get();
+
+    return view('admin.rekap', compact('data'));
 }
 }

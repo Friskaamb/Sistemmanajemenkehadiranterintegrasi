@@ -12,7 +12,7 @@
         <p class="text-gray-400">Kelola informasi karyawan PT.DFL</p>
     </div>
     <div class="flex gap-3">
-        <a href="{{ route('admin.karyawan.export') }}"
+        <a href="{{ route('admin.karyawan.export', request()->query()) }}"
    class="bg-white border border-gray-200 text-gray-700 px-6 py-3 rounded-xl font-bold hover:bg-gray-50 flex items-center gap-2 shadow-sm">
 
     <i class="fas fa-file-excel"></i>
@@ -86,7 +86,7 @@
                     <th class="px-6 py-4 w-10"><input type="checkbox" class="rounded"></th>
                     <th class="px-6 py-4">Nama Karyawan</th>
                     <th class="px-6 py-4">NIK</th>
-                    <th class="px-6 py-4">Divisi/Jabatan</th>
+                    <th class="px-6 py-4">Divisi</th>
                     <th class="px-6 py-4">Email</th>
                     <th class="px-6 py-4">Status</th>
                     <th class="px-6 py-4 text-center">Aksi</th>

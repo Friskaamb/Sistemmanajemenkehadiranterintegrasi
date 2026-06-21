@@ -115,9 +115,6 @@ Route::middleware('auth')->prefix('admin')->group(function () {
     Route::get('/rekap', [AttendanceController::class, 'rekap'])
         ->name('admin.rekap');
 
-    Route::get('/rekap/export-pdf', [AttendanceController::class, 'export_pdf'])
-        ->name('admin.rekap.pdf');
-
     Route::get('/rekap/export-excel', [AttendanceController::class, 'export_excel'])
         ->name('admin.rekap.excel');
 
