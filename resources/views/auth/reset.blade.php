@@ -9,7 +9,7 @@
 </head>
 <body class="bg-gray-100 flex items-center justify-center min-h-screen">
 
-    <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl p-8">
+    <div class="bg-white w-full max-w-3xl rounded-3xl shadow-2xl p-8">
 
         <!-- Header -->
         <div class="text-center mb-8">

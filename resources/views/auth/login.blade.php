@@ -92,13 +92,6 @@
                     </a>
                 </div>
 
-                <p class="text-center text-sm text-gray-500">
-                    Karyawan baru?
-                    <a href="/register" class="text-blue-900 font-bold hover:underline">
-                        Daftar di sini
-                    </a>
-                </p>
-
                 <p class="text-center text-[10px] text-gray-400">
                     © 2026 PT. Digital Future Leaders
                 </p>

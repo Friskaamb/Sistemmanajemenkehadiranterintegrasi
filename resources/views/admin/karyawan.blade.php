@@ -83,22 +83,20 @@
         <table class="w-full text-left">
             <thead>
                 <tr class="bg-blue-900 text-white text-[10px] font-bold uppercase tracking-widest">
-                    <th class="px-6 py-4 w-10"><input type="checkbox" class="rounded"></th>
-                    <th class="px-6 py-4">Nama Karyawan</th>
-                    <th class="px-6 py-4">NIK</th>
-                    <th class="px-6 py-4">Divisi</th>
-                    <th class="px-6 py-4">Email</th>
-                    <th class="px-6 py-4">Status</th>
-                    <th class="px-6 py-4 text-center">Aksi</th>
-                </tr>
+    <th class="px-8 py-4">Nama Karyawan</th>
+    <th class="px-6 py-4">NIK</th>
+    <th class="px-6 py-4">Divisi</th>
+    <th class="px-6 py-4">Email</th>
+    <th class="px-6 py-4">Status</th>
+    <th class="px-6 py-4 text-center">Aksi</th>
+</tr>
             </thead>
             <tbody class="text-gray-600 text-sm">
                 
 
                 @foreach($karyawans as $k)
                 <tr class="border-b hover:bg-gray-50 transition">
-                    <td class="px-6 py-4"><input type="checkbox" class="rounded"></td>
-                    <td class="px-6 py-4 flex items-center gap-3">
+                    <td class="px-8 py-4 flex items-center gap-3">
                         <div class="w-10 h-10 bg-blue-100 text-blue-900 rounded-full flex items-center justify-center font-bold text-xs">{{ strtoupper(substr($k->name,0,1)) }}</div>
                         <span class="font-bold text-gray-800">{{ $k->name }}</span>
                     </td>
