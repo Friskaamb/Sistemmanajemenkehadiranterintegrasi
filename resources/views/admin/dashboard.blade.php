@@ -67,17 +67,93 @@
 
 <!-- Grafik -->
 
-<div class="mb-8">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 items-start">
+
+    <!-- Grafik Divisi -->
     <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
-    <h3 class="font-bold text-blue-900 mb-6 flex items-center gap-2">
-        <i class="fas fa-chart-bar"></i>
-        Jumlah Karyawan per Divisi
-    </h3>
-    <div class="h-52">
-        <canvas id="divisionChart"></canvas>
+
+        <h3 class="font-bold text-blue-900 mb-6 flex items-center gap-2">
+            <i class="fas fa-chart-bar"></i>
+            Jumlah Karyawan per Divisi
+        </h3>
+
+        <div class="flex-1 h-72">
+            <canvas id="divisionChart"></canvas>
+        </div>
+
     </div>
 
+    <!-- Card Ranking -->
+<div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex flex-col">
+        <div class="flex justify-between items-center mb-6">
+
+    <div>
+        <h3 class="font-bold text-red-600 text-lg">
+            🚨 Top 5 Analisis Keterambatan Karyawan
+        </h3>
+
+        <p class="text-gray-400 text-xs leading-relaxed mt-2 mb-4">
+    Data diperbarui secara otomatis berdasarkan riwayat absensi 30 hari terakhir.
+</p>
+    </div>
+
+    <span class="bg-red-100 text-red-600 px-3 py-1 rounded-full text-xs font-semibold">
+        30 Hari
+    </span>
+
 </div>
+        @php
+             $max = $topTerlambat->max('total');
+        @endphp
+
+        @forelse($topTerlambat as $index => $item)
+
+    @php
+        $medali = ['🥇','🥈','🥉','4️⃣','5️⃣'];
+
+        $warna = [
+            'bg-red-500',
+            'bg-orange-500',
+            'bg-yellow-500',
+            'bg-blue-500',
+            'bg-indigo-500'
+        ];
+    @endphp
+
+    <div class="mb-5">
+
+        <div class="flex justify-between items-center mb-2">
+
+            <div class="font-semibold text-gray-700">
+                {{ $medali[$index] }}
+                {{ $item->nama }}
+            </div>
+
+            <span class="bg-red-100 text-red-600 px-3 py-1 rounded-full text-xs font-bold">
+                {{ $item->total }} kali
+            </span>
+
+        </div>
+
+        <div class="w-full bg-gray-200 rounded-full h-3">
+    <div
+        class="{{ $warna[$index] }} h-3 rounded-full"
+        style="width: {{ $max > 0 ? ($item->total / $max) * 100 : 0 }}%;">
+    </div>
+</div>
+
+    </div>
+
+@empty
+
+<div class="flex justify-center items-center h-56 text-gray-400">
+    Belum ada data keterlambatan.
+</div>
+
+@endforelse
+
+    </div>
+
 </div>
 
 <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8">

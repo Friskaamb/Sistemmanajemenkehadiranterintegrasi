@@ -10,6 +10,7 @@ use App\Models\Division;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 use App\Exports\KaryawanExport;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -56,6 +57,16 @@ class DashboardController extends Controller
     $cutiPending = Leave::where('status', 'Pending')->count();
 
     $divisions = Division::withCount('users')->get();
+    $topTerlambat = Attendance::select(
+        'nama',
+        DB::raw('COUNT(*) as total')
+    )
+    ->where('status', 'Terlambat')
+    ->whereDate('tanggal', '>=', now()->subDays(30))
+    ->groupBy('nama')
+    ->orderByDesc('total')
+    ->limit(5)
+    ->get();
     return view('admin.dashboard', compact(
     'totalKaryawan',
     'hadirHariIni',
@@ -63,7 +74,9 @@ class DashboardController extends Controller
     'tidakHadir',
     'absensiTerbaru',
     'divisions',
-    'cutiPending'
+    'cutiPending',
+    'topTerlambat'
+    
 ));
 }
 
