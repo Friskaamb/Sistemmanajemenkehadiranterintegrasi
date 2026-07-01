@@ -15,7 +15,11 @@ class Attendance extends Model
         'foto_masuk',
         'foto_pulang',
         'status',
-        'total_jam'
+        'status_pulang',
+        'total_jam',
+
+        'latitude',
+        'longitude',
     ];
     public function user()
 {

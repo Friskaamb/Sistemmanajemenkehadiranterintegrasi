@@ -120,9 +120,13 @@ class AttendanceController extends Controller
     }
     public function masukWebcam(Request $request)
 {
-    $image = $request->image;
+    $request->validate([
+        'image' => 'required',
+        'latitude' => 'nullable',
+        'longitude' => 'nullable',
+    ]);
 
-    $image = str_replace('data:image/png;base64,', '', $image);
+    $image = str_replace('data:image/png;base64,', '', $request->image);
     $image = str_replace(' ', '+', $image);
 
     $imageName = time() . '.png';
@@ -134,28 +138,72 @@ class AttendanceController extends Controller
     }
 
     file_put_contents(
-        $folder . '/' . $imageName,
+        $folder.'/'.$imageName,
         base64_decode($image)
     );
 
     $jamMasuk = now();
 
-$status = $jamMasuk->format('H:i:s') > '08:00:00'
-    ? 'Terlambat'
-    : 'Hadir';
+    $status = $jamMasuk->format('H:i:s') > '08:00:00'
+        ? 'Terlambat'
+        : 'Hadir';
 
-Attendance::create([
-    'user_id' => auth()->id(),
-    'nama' => auth()->user()->name,
-    'tanggal' => now()->format('Y-m-d'),
-    'jam_masuk' => $jamMasuk->format('H:i:s'),
-    'foto_masuk' => $imageName,
-    'status' => $status,
-]);
+    $latitude = $request->latitude;
+    $longitude = $request->longitude;
+
+    if ($latitude == null || $longitude == null) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Lokasi tidak berhasil didapatkan.'
+        ]);
+    }
+
+    $kantorLat = 1.050842;
+    $kantorLng = 104.032611;
+
+    $jarak = $this->hitungJarak(
+        $latitude,
+        $longitude,
+        $kantorLat,
+        $kantorLng
+    );
+
+    
+    if ($jarak > 50000) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Anda berada di luar area perusahaan.'
+        ]);
+    }
+
+    try {
+
+        Attendance::create([
+            'user_id' => auth()->id(),
+            'nama' => auth()->user()->name,
+            'tanggal' => now()->format('Y-m-d'),
+            'jam_masuk' => $jamMasuk->format('H:i:s'),
+            'foto_masuk' => $imageName,
+            'status' => $status,
+            'latitude' => $latitude,
+            'longitude' => $longitude,
+        ]);
+
+        return response()->json([
+            'success' => true
+        ]);
+
+}    catch (\Throwable $e) {
 
     return response()->json([
-        'success' => true
-    ]);
+        'success' => false,
+        'message' => $e->getMessage(),
+        'line' => $e->getLine(),
+        'file' => $e->getFile(),
+    ], 500);
+
+}
+
 }
 
 public function pulangWebcam(Request $request)
@@ -174,31 +222,49 @@ public function pulangWebcam(Request $request)
     }
 
     file_put_contents(
-        $folder . '/' . $imageName,
+        $folder.'/'.$imageName,
         base64_decode($image)
     );
 
     $absen = Attendance::where('user_id', auth()->id())
-        ->whereDate('tanggal', now())
+        ->whereDate('tanggal', now()->toDateString())
         ->first();
 
-    if ($absen) {
-        $jamPulang = now();
-
-$statusPulang = $jamPulang->format('H:i:s') < '17:00:00'
-    ? 'Pulang Cepat'
-    : 'Normal';
-
-$absen->update([
-    'jam_pulang' => $jamPulang->format('H:i:s'),
-    'foto_pulang' => $imageName,
-    'status_pulang' => $statusPulang
-]);
+    if (!$absen) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Data absen masuk tidak ditemukan.'
+        ]);
     }
 
-    return response()->json([
-        'success' => true
-    ]);
+    $jamPulang = now();
+
+    $statusPulang = $jamPulang->format('H:i:s') < '17:00:00'
+        ? 'Pulang Cepat'
+        : 'Normal';
+
+    $jamMasuk = Carbon::parse($absen->jam_masuk);
+
+$interval = $jamMasuk->diff($jamPulang);
+
+$totalJam = sprintf(
+    '%02d:%02d:%02d',
+    $interval->h,
+    $interval->i,
+    $interval->s
+);
+    $absen->jam_pulang = $jamPulang->format('H:i:s');
+$absen->foto_pulang = $imageName;
+$absen->status_pulang = $statusPulang;
+$absen->total_jam = $totalJam;
+
+$hasil = $absen->save();
+
+dd(
+    $hasil,
+    $totalJam,
+    $absen->toArray()
+);
 }
 
     public function export_excel(Request $request)
@@ -212,7 +278,7 @@ $absen->update([
     );
 }
 
-    public function riwayat()
+   public function riwayat()
 {
     $attendances = Attendance::where('user_id', auth()->id())
         ->latest()
@@ -220,5 +286,24 @@ $absen->update([
         ->get();
 
     return view('karyawan.riwayat', compact('attendances'));
+}
+
+private function hitungJarak($lat1, $lon1, $lat2, $lon2)
+{
+    $earth = 6371000;
+
+    $dLat = deg2rad($lat2 - $lat1);
+    $dLon = deg2rad($lon2 - $lon1);
+
+    $a =
+        sin($dLat / 2) * sin($dLat / 2) +
+        cos(deg2rad($lat1)) *
+        cos(deg2rad($lat2)) *
+        sin($dLon / 2) *
+        sin($dLon / 2);
+
+    $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
+
+    return $earth * $c;
 }
 }

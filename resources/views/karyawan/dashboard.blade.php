@@ -202,6 +202,8 @@
 let streamMasuk = null;
 let streamPulang = null;
 
+let latitude = null;
+let longitude = null;
 /*
 |--------------------------------------------------------------------------
 | BUKA KAMERA
@@ -226,6 +228,41 @@ async function bukaKamera(jenis)
 
     modal.classList.remove('hidden');
 
+if (navigator.geolocation) {
+
+    try {
+
+        await new Promise((resolve, reject) => {
+
+            navigator.geolocation.getCurrentPosition(
+
+                function(position){
+
+                    latitude = position.coords.latitude;
+                    longitude = position.coords.longitude;
+
+                    console.log(latitude, longitude);
+
+                    resolve();
+
+                },
+
+                function(error){
+
+                    alert("Aktifkan GPS terlebih dahulu");
+                    reject(error);
+
+                }
+
+            );
+
+        });
+
+    } catch(e){
+        return;
+    }
+
+}
     try
     {
         const stream = await navigator.mediaDevices.getUserMedia({
@@ -308,6 +345,8 @@ function ambilFoto(jenis)
 
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
+    console.log(video.videoWidth);
+    console.log(video.videoHeight);
 
     context.drawImage(
         video,
@@ -318,6 +357,8 @@ function ambilFoto(jenis)
     );
 
     const image = canvas.toDataURL('image/png');
+    console.log("Latitude :", latitude);
+    console.log("Longitude :", longitude);
 
 fetch(
     jenis === 'masuk'
@@ -330,26 +371,39 @@ fetch(
         'X-CSRF-TOKEN': '{{ csrf_token() }}'
     },
     body: JSON.stringify({
-        image: image
+        image: image,
+        latitude: latitude,
+        longitude: longitude
     })
 })
 .then(response => response.json())
 .then(data => {
 
-    if(data.success)
-    {
+    console.log(data);
+
+    if(data.success){
+
         alert(
             jenis === 'masuk'
-                ? 'Absen masuk berhasil'
-                : 'Absen pulang berhasil'
+            ? 'Absen masuk berhasil'
+            : 'Absen pulang berhasil'
         );
 
         location.reload();
+
+    }else{
+
+        alert(data.message);
+
     }
+
 })
 .catch(error => {
-    console.log(error);
-    alert('Gagal menyimpan absensi');
+
+    console.error(error);
+
+    alert("Terjadi error");
+
 });
 
 tutupKamera(jenis);

@@ -8,14 +8,22 @@
     <div class="overflow-x-auto">
         <table class="w-full text-left">
             <thead>
-                <tr class="text-gray-400 uppercase text-xs font-bold border-b">
-                    <th class="pb-4">Tanggal</th>
-                    <th class="pb-4">Jam Masuk</th>
-                    <th class="pb-4">Jam Pulang</th>
-                    <th class="pb-4">Total Jam</th>
-                    <th class="pb-4">Status</th>
-                </tr>
-            </thead>
+    <tr class="text-gray-400 uppercase text-xs font-bold border-b">
+
+        <th class="pb-4">Tanggal</th>
+
+        <th class="pb-4">Jam Masuk</th>
+
+        <th class="pb-4">Jam Pulang</th>
+
+        <th class="pb-4">Total Jam</th>
+
+        <th class="pb-4">Status</th>
+
+        <th class="pb-4 text-center">Detail</th>
+
+    </tr>
+</thead>
             <tbody class="text-gray-600 text-sm">
     @forelse($attendances as $attendance)
     <tr class="border-b">
@@ -44,10 +52,158 @@
                 </span>
             @endif
         </td>
+        <td class="text-center">
+
+<button
+type="button"
+onclick="toggleDetail({{ $attendance->id }})"
+class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg">
+
+👁 Detail
+
+</button>
+
+</td>
     </tr>
+    <tr
+id="detail{{ $attendance->id }}"
+class="hidden bg-gray-50">
+
+<td colspan="6">
+
+<div class="p-6">
+
+<h2 class="text-xl font-bold mb-6">
+
+Detail Kehadiran
+
+</h2>
+
+<div class="grid md:grid-cols-2 gap-8">
+
+<div>
+
+<h3 class="font-bold mb-3">
+
+📸 Foto Masuk
+
+</h3>
+
+@if($attendance->foto_masuk)
+
+<img
+src="{{ asset('uploads/absensi/'.$attendance->foto_masuk) }}"
+class="rounded-xl border w-full">
+
+@else
+
+Belum ada foto
+
+@endif
+
+</div>
+
+<div>
+
+<h3 class="font-bold mb-3">
+
+📸 Foto Pulang
+
+</h3>
+
+@if($attendance->foto_pulang)
+
+<img
+src="{{ asset('uploads/absensi/'.$attendance->foto_pulang) }}"
+class="rounded-xl border w-full">
+
+@else
+
+Belum Absen Pulang
+
+@endif
+
+</div>
+
+</div>
+
+<hr class="my-6">
+
+<div class="grid md:grid-cols-2 gap-8">
+
+<div>
+
+<h3 class="font-bold mb-4">
+
+📍 Lokasi Absen
+
+</h3>
+
+<p>
+
+Latitude :
+<b>{{ $attendance->latitude }}</b>
+
+</p>
+
+<p>
+
+Longitude :
+<b>{{ $attendance->longitude }}</b>
+
+</p>
+
+<br>
+
+<p class="text-green-600 font-bold">
+
+✅ Dalam Radius Perusahaan
+
+</p>
+
+</div>
+
+<div>
+
+<h3 class="font-bold mb-4">
+
+Informasi Kehadiran
+
+</h3>
+
+<p>Jam Masuk : {{ $attendance->jam_masuk }}</p>
+
+<p>Jam Pulang : {{ $attendance->jam_pulang ?? '-' }}</p>
+
+<p>Total Jam : {{ $attendance->total_jam ?? '-' }}</p>
+
+<p>Status : {{ $attendance->status }}</p>
+
+@if($attendance->latitude)
+
+<a
+href="https://www.google.com/maps?q={{ $attendance->latitude }},{{ $attendance->longitude }}"
+target="_blank"
+class="inline-block mt-5 bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-lg">
+
+📍 Lihat Lokasi di Google Maps
+
+</a>
+
+@endif
+
+</div>
+
+</div>
+
+</div>
+
+</td>
+
+</tr>
     @empty
     <tr>
-        <td colspan="5" class="text-center py-5 text-gray-400">
+        <td colspan="6" class="text-center py-5 text-gray-400">
             Belum ada data absensi
         </td>
     </tr>
@@ -56,4 +212,15 @@
         </table>
     </div>
 </div>
+<script>
+
+function toggleDetail(id){
+
+let detail=document.getElementById("detail"+id);
+
+detail.classList.toggle("hidden");
+
+}
+
+</script>
 @endsection
